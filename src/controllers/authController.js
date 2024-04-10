@@ -187,16 +187,8 @@ const loginSocial = asyncHandler(async (req, res) => {
 });
 
 const registerUser = asyncHandler(async (req, res) => {
-    const {
-        avatar,
-        firstName,
-        lastName,
-        userType,
-        userName,
-        mail,
-        password,
-        workspace
-    } = req.body;
+    const { avatar, firstName, lastName, userType, userName, mail, password } =
+        req.body;
 
     const hashedPassword = await bcrypt.hash(password + '', 10);
 
@@ -212,7 +204,6 @@ const registerUser = asyncHandler(async (req, res) => {
             isVerified: false,
             password: hashedPassword,
             point: 0,
-            workspace,
             follows: [],
             friends: []
         });

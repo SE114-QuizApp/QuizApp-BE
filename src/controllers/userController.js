@@ -54,7 +54,7 @@ const createUser = asyncHandler(async (req, res) => {
 
 const updateUser = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { firstName, lastName, userName, avatar, bio } = req.body;
+    const { firstName, lastName, userName, avatar } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(constants.NOT_FOUND).json(`No user with id: ${id}`);
@@ -80,9 +80,9 @@ const updateUser = asyncHandler(async (req, res) => {
         avatar,
         firstName,
         lastName,
-        userName,
-        bio,
-        update: newUpdate
+        userName
+        // bio,
+        // update: newUpdate
     });
 
     try {

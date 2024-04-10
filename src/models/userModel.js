@@ -51,26 +51,12 @@ const userSchema = new mongoose.Schema({
         type: [String]
     },
 
-    workspace: {
-        type: Object
-    },
-
-    bio: {
-        type: String
-    },
-
     emailToken: {
         type: String
     },
 
     isVerified: {
         type: Boolean
-    },
-
-    update: {
-        profile: { type: Date },
-        mail: { type: Date },
-        password: { type: Date }
     }
 });
 
