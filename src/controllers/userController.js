@@ -135,7 +135,8 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 const unFriend = asyncHandler(async (req, res) => {
-    const { myId, friendId } = req.params;
+    const { friendId } = req.params;
+    const myId = req.user._id;
 
     if (!mongoose.Types.ObjectId.isValid(myId) || !User.findById(myId)) {
         res.status(constants.NOT_FOUND).json({
@@ -165,7 +166,8 @@ const unFriend = asyncHandler(async (req, res) => {
 });
 
 const addFriend = asyncHandler(async (req, res) => {
-    const { myId, friendId } = req.params;
+    const { friendId } = req.params;
+    const myId = req.user._id;
 
     if (!mongoose.Types.ObjectId.isValid(myId) || !User.findById(myId)) {
         res.status(constants.NOT_FOUND).json({

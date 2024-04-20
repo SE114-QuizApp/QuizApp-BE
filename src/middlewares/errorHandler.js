@@ -2,7 +2,9 @@ import constants from '../constants/httpStatus.js';
 
 const errorHandler = (err, req, res, next) => {
     const statusCode =
-        res.statusCode || err.statusCode || constants.SERVER_ERROR;
+        res.statusCode === constants.OK
+            ? err.statusCode || constants.SERVER_ERROR
+            : res.statusCode;
     const message = err.message || 'Server Error';
     const stackTrace = err.stack || null;
 

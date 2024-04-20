@@ -23,8 +23,8 @@ userRouter.get('/', getUsers);
 userRouter.get('/:id', getUser);
 userRouter.post('/change-password', changePassword);
 userRouter.patch('/:id', verifyUserAuthorization, updateUser);
-userRouter.put('/:myId/addFriend/:friendId', addFriend);
-userRouter.put('/:myId/unfriend/:friendId', unFriend);
+userRouter.put('/addFriend/:friendId', addFriend);
+userRouter.put('/unfriend/:friendId', unFriend);
 
 userRouter.post('/', verifyAdmin, createUser);
 userRouter.delete('/:id', verifyAdmin, deleteUser);

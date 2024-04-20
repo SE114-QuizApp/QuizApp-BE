@@ -6,7 +6,11 @@ const messageSchema = new mongoose.Schema(
 
         image: { type: String },
 
-        message: { type: String }
+        message: { type: String },
+
+        from: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+
+        to: { type: String }
     },
 
     {

@@ -83,6 +83,7 @@ export const authorizeInfoUserTest = async (user) => {
 
 const loginUser = asyncHandler(async (req, res) => {
     const { mail, password } = req.body;
+
     const user = await User.findOne({ mail });
 
     if (!user) {
@@ -155,8 +156,8 @@ const loginSocial = asyncHandler(async (req, res) => {
             mail: email,
             userName: name,
             userType: 'Student',
-            firstName: 'NoF',
-            lastName: 'NoL',
+            firstName: '',
+            lastName: '',
             emailToken: crypto.randomBytes(64).toString('hex'),
             isVerified: false,
             point: 0,
@@ -276,6 +277,16 @@ const requestRefreshToken = asyncHandler(async (req, res) => {
     }
 });
 
+const getMe = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    if (!user) {
+        res.status(constants.NOT_FOUND);
+        throw new Error('User not found');
+    }
+    res.status(constants.OK).json({ user });
+});
+
 const userLogout = asyncHandler(async (req, res) => {
     const { id } = req.params;
     try {
@@ -330,6 +341,7 @@ export {
     loginSocial,
     loginUser,
     requestRefreshToken,
+    getMe,
     userLogout,
     resetPassword
 };

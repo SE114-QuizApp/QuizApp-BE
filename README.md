@@ -36,11 +36,11 @@ Sau đó check lại bằng lệnh
 3. Add .env file:
 
 ```
-   PORT = 4000
+   PORT=4000
    CONNECTION_STRING=mongodb://127.0.0.1:27017/Quizzes_App
-   EXPRISES_TIME= '100 days'
-   ACCESS_TOKEN_SECRET = 'jwttoken123'
-   REFRESH_TOKEN_SECERT = 'jwtrefreshtoken123'
+   EXPRISES_TIME='100 days'
+   ACCESS_TOKEN_SECRET='jwttoken123'
+   REFRESH_TOKEN_SECERT='jwtrefreshtoken123'
 ```
 
 ## Sử dụng

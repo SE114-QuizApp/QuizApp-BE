@@ -226,10 +226,10 @@ const getQuizzesPublics = asyncHandler(async (req, res) => {
         return quiz;
     });
     res.status(constants.OK).json({
-        data: quizes,
         currentPage: Number(PAGE),
         pageSize: quizes.length,
-        numberOfPages: Math.ceil(total / LIMIT)
+        numberOfPages: Math.ceil(total / LIMIT),
+        data: quizes
     });
 });
 
@@ -335,7 +335,7 @@ export const getDraftQuizById = asyncHandler(async (req, res) => {
 //route  POST /api/quiz/draft
 //access Authenticated user
 export const createDraftQuiz = asyncHandler(async (req, res) => {
-    const { name, description, isPublic } = req.body;
+    const { name, description, isPublic, category, grade } = req.body;
 
     if (!name) {
         res.status(constants.FORBIDDEN);
@@ -389,14 +389,14 @@ const createQuiz = asyncHandler(async (req, res) => {
         });
     }
 
-    if (questionList.length === 0) {
-        // res.status(constants.BAD_REQUEST);
-        // throw new Error('Question List must be not empty!');
+    // if (questionList.length === 0) {
+    //     // res.status(constants.BAD_REQUEST);
+    //     // throw new Error('Question List must be not empty!');
 
-        return res.status(constants.BAD_REQUEST).json({
-            message: 'Question List must be not empty!'
-        });
-    }
+    //     return res.status(constants.BAD_REQUEST).json({
+    //         message: 'Question List must be not empty!'
+    //     });
+    // }
 
     const categoryResult = await Category.findOne({
         name: category.name
@@ -438,36 +438,40 @@ const createQuiz = asyncHandler(async (req, res) => {
         // dateCreated: new Date().toISOString()
     });
 
-    let SavedQuestionList = questionList.map(async (item) => {
-        const newQuestion = new Question({
-            optionQuestion: item.optionQuestion,
-            // quizId: newQuiz._id,
-            creator: req.user._id,
-            questionIndex: item.questionIndex,
-            tags: item.tags,
-            isPublic: true,
-            questionType: item.questionType,
-            pointType: item.pointType,
-            answerTime: item.answerTime,
-            backgroundImage: item.backgroundImage,
-            content: item.content,
-            answerList: item.answerList,
-            maxCorrectAnswer: item.maxCorrectAnswer,
-            correctAnswerCount: item.correctAnswerCount,
-            answerCorrect: item.answerCorrect
+    if (questionList.length === 0) {
+        quiz.isDraft = true;
+    } else {
+        let SavedQuestionList = questionList.map(async (item) => {
+            const newQuestion = new Question({
+                optionQuestion: item.optionQuestion,
+                // quizId: newQuiz._id,
+                creator: req.user._id,
+                questionIndex: item.questionIndex,
+                tags: item.tags,
+                isPublic: true,
+                questionType: item.questionType,
+                pointType: item.pointType,
+                answerTime: item.answerTime,
+                backgroundImage: item.backgroundImage,
+                content: item.content,
+                answerList: item.answerList,
+                maxCorrectAnswer: item.maxCorrectAnswer,
+                correctAnswerCount: item.correctAnswerCount,
+                answerCorrect: item.answerCorrect
+            });
+            const question = await newQuestion.save();
+            return question;
         });
-        const question = await newQuestion.save();
-        return question;
-    });
 
-    await Promise.all(SavedQuestionList).then((question) => {
-        question.forEach((item) => {
-            quiz.questionList.push(item._id);
+        await Promise.all(SavedQuestionList).then((question) => {
+            question.forEach((item) => {
+                quiz.questionList.push(item._id);
+            });
         });
-    });
 
-    if (quiz.numberOfQuestions !== quiz.questionList.length)
-        quiz.numberOfQuestions = quiz.questionList.length;
+        if (quiz.numberOfQuestions !== quiz.questionList.length)
+            quiz.numberOfQuestions = quiz.questionList.length;
+    }
 
     const newQuiz = await quiz.save();
 
