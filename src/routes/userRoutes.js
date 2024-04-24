@@ -9,7 +9,8 @@ import {
     deleteUser,
     addFriend,
     unFriend,
-    changePassword
+    changePassword,
+    getListRankingUsers
 } from '../controllers/userController.js';
 
 import {
@@ -20,11 +21,12 @@ import {
 
 userRouter.use(verifyAccessToken);
 userRouter.get('/', getUsers);
-userRouter.get('/:id', getUser);
-userRouter.post('/change-password', changePassword);
-userRouter.patch('/:id', verifyUserAuthorization, updateUser);
+userRouter.put('/', updateUser);
+userRouter.get('/ranking', getListRankingUsers);
+userRouter.put('/change-password', changePassword);
 userRouter.put('/addFriend/:friendId', addFriend);
 userRouter.put('/unfriend/:friendId', unFriend);
+userRouter.get('/:id', getUser);
 
 userRouter.post('/', verifyAdmin, createUser);
 userRouter.delete('/:id', verifyAdmin, deleteUser);

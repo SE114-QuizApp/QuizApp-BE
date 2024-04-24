@@ -32,6 +32,23 @@ const getUsers = asyncHandler(async (req, res) => {
     }
 });
 
+const getListRankingUsers = asyncHandler(async (req, res) => {
+    const users = await User.find()
+        .select('userName firstName lastName avatar point')
+        .lean();
+
+    let newUsers = users.sort((a, b) => {
+        return b.point - a.point;
+    });
+    //add a field rank to each user
+    newUsers = newUsers.map((user, index) => {
+        user.rank = index + 1;
+        return user;
+    });
+
+    res.status(constants.OK).json(newUsers);
+});
+
 const createUser = asyncHandler(async (req, res) => {
     const { userType, userName, fullName, email, password } = req.body;
     const salt = await bcrypt.genSalt();
@@ -53,67 +70,52 @@ const createUser = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const { firstName, lastName, userName, avatar } = req.body;
+    const id = req.user._id;
+
+    const { firstName, lastName, userName, avatar, userType } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(constants.NOT_FOUND).json(`No user with id: ${id}`);
     }
 
-    if (userName.length < 5 || userName.length > 15) {
-        return res.status(constants.NOT_FOUND).json('User Name is not format');
-    }
-
-    if (firstName.length > 4) {
-        return res.status(constants.NOT_FOUND).json('First Name is not format');
-    }
-
-    if (lastName.length > 4) {
-        return res.status(constants.NOT_FOUND).json('Last Name is not format');
-    }
-
     const findUserId = await User.findById(id);
-    const newUpdate = { ...findUserId.update, profile: new Date() };
-
-    const user = new User({
-        _id: id,
-        avatar,
-        firstName,
-        lastName,
-        userName
-        // bio,
-        // update: newUpdate
-    });
-
-    try {
-        const updatedUser = await User.findByIdAndUpdate(id, user, {
-            new: true
-        });
-
-        return res.status(constants.OK).json(updatedUser);
-    } catch (error) {
-        console.log(error);
-        res.status(constants.BAD_REQUEST).json({ message: error.message });
+    if (!findUserId) {
+        return res.status(constants.NOT_FOUND).json(`No user with id: ${id}`);
     }
+
+    const dataUpdate = { firstName, lastName, userName, avatar, userType };
+
+    const user = await User.findByIdAndUpdate(
+        id,
+        { $set: dataUpdate },
+        { new: true }
+    );
+
+    return res.status(constants.OK).json({ user });
 });
 
 export const changePassword = asyncHandler(async (req, res) => {
-    const { id } = req.user;
+    const { _id } = req.user;
     const { oldPassword, newPassword } = req.body;
 
-    const user = await User.findById(id);
+    const user = await User.findById(_id);
+    if (!user) {
+        return res.status(constants.NOT_FOUND).json({
+            message: 'User not found'
+        });
+    }
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
 
     if (!isMatch) {
-        return res.status(constants.BAD_REQUEST).json({
+        return res.status(constants.FORBIDDEN).json({
             message: 'Old password is not correct'
         });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword + '', 10);
 
-    await User.findByIdAndUpdate(id, { password: hashedPassword });
+    await User.findByIdAndUpdate(_id, { password: hashedPassword });
 
     return res.json({
         message: 'Change password successfully'
@@ -203,5 +205,6 @@ export {
     updateUser,
     deleteUser,
     addFriend,
-    unFriend
+    unFriend,
+    getListRankingUsers
 };
