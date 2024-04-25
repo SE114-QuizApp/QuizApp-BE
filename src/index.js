@@ -5,14 +5,10 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 import { Server } from 'socket.io';
 
 import route from './routes/index.js';
-import morgan from 'morgan';
 
 dotenv.config();
 connectDb();
@@ -47,6 +43,10 @@ app.use(route);
 //         res.send(data);
 //     });
 // });
+//create a route to handle the get request check health of the server
+app.get('/', (req, res) => {
+    res.send('Server is ready');
+});
 app.use(errorHandler);
 
 const server = app.listen(Port, () => {
