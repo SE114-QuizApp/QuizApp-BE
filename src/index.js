@@ -23,20 +23,30 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // create a write stream (in append mode)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {
-    flags: 'a'
-});
-
-// setup the logger
-app.use(morgan('combined', { stream: accessLogStream }));
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+// var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {
+//     flags: 'a'
+// });
+// // setup the logger
+// app.use(morgan('combined', { stream: accessLogStream }));
 app.use(cors());
 app.use(cookieParser());
 app.use(express.static('public'));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(route);
+// app.get('/api/accesslog', (req, res) => {
+//     // Đọc dữ liệu từ file access.log
+//     fs.readFile(path.join(__dirname, 'access.log'), 'utf8', (err, data) => {
+//         if (err) {
+//             console.error(err);
+//             return res.status(500).send('Error reading access log');
+//         }
+//         // Gửi dữ liệu về client
+//         res.send(data);
+//     });
+// });
 app.use(errorHandler);
 
 const server = app.listen(Port, () => {
@@ -46,7 +56,7 @@ const server = app.listen(Port, () => {
 const io = new Server(server, {
     connectionStateRecovery: {},
     cors: {
-        origin: 'http://localhost:3000'
+        origin: '*'
     }
 });
 
