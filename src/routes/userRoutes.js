@@ -10,7 +10,8 @@ import {
     addFriend,
     unFriend,
     changePassword,
-    getListRankingUsers
+    getListRankingUsers,
+    updateUserPoint
 } from '../controllers/userController.js';
 
 import {
@@ -27,6 +28,7 @@ userRouter.put('/change-password', changePassword);
 userRouter.put('/addFriend/:friendId', addFriend);
 userRouter.put('/unfriend/:friendId', unFriend);
 userRouter.get('/:id', getUser);
+userRouter.put('/updatePoints', updateUserPoint);
 
 userRouter.post('/', verifyAdmin, createUser);
 userRouter.delete('/:id', verifyAdmin, deleteUser);

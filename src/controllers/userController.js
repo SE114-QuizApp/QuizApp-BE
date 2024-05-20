@@ -94,6 +94,29 @@ const updateUser = asyncHandler(async (req, res) => {
     return res.status(constants.OK).json({ user });
 });
 
+const updateUserPoint = asyncHandler(async (req, res) => {
+    const id = req.user._id;
+    const { point } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(constants.NOT_FOUND).json(`No user with id: ${id}`);
+    }
+
+    if (!point || point < 0) {
+        res.status(constants.BAD_REQUEST);
+        throw new Error('Point must be a positive number');
+    }
+
+    const findUserId = await User.findById(id);
+    if (!findUserId) {
+        return res.status(constants.NOT_FOUND).json(`No user with id: ${id}`);
+    }
+
+    const user = await User.findByIdAndUpdate(id, { point }, { new: true });
+
+    return res.status(constants.OK).json({ user });
+});
+
 export const changePassword = asyncHandler(async (req, res) => {
     const { _id } = req.user;
     const { oldPassword, newPassword } = req.body;
@@ -206,5 +229,6 @@ export {
     deleteUser,
     addFriend,
     unFriend,
-    getListRankingUsers
+    getListRankingUsers,
+    updateUserPoint
 };
