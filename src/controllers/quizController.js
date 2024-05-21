@@ -157,12 +157,6 @@ const getTeacherQuizzes = asyncHandler(async (req, res) => {
     }
     const quizzes = await findQuizByCreator(teacherId);
 
-    if (quizzes.length === 0) {
-        res.status(constants.OK).json({
-            message: 'No quizzes found'
-        });
-    }
-
     res.status(constants.OK).json(quizzes);
 });
 

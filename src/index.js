@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 import { Server } from 'socket.io';
 
 import route from './routes/index.js';
+import morgan from 'morgan';
 
 dotenv.config();
 connectDb();
@@ -25,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 //     flags: 'a'
 // });
 // // setup the logger
-// app.use(morgan('combined', { stream: accessLogStream }));
+// app.use(morgan('combined'));
 app.use(cors());
 app.use(cookieParser());
 app.use(express.static('public'));
