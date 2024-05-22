@@ -83,7 +83,18 @@ const updateUser = asyncHandler(async (req, res) => {
         return res.status(constants.NOT_FOUND).json(`No user with id: ${id}`);
     }
 
-    const dataUpdate = { firstName, lastName, userName, avatar, userType };
+    const dataUpdate = {
+        firstName,
+        lastName,
+        userName,
+        avatar:
+            avatar ||
+            findUserId.avatar ||
+            `https://avatar.iran.liara.run/username?username=${encodeURIComponent(
+                `${lastName} ${firstName}`
+            )}`,
+        userType
+    };
 
     const user = await User.findByIdAndUpdate(
         id,

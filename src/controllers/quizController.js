@@ -563,11 +563,11 @@ const updateQuiz = asyncHandler(async (req, res) => {
         throw new Error(`No quiz with id: ${id}`);
     }
 
-    const QuizWithIdFromBody = await Quiz.findById(_id).lean();
-    if (!QuizWithIdFromBody) {
-        res.status(constants.NOT_FOUND);
-        throw new Error(`No quiz with id: ${_id}`);
-    }
+    // const QuizWithIdFromBody = await Quiz.findById(_id).lean();
+    // if (!QuizWithIdFromBody) {
+    //     res.status(constants.NOT_FOUND);
+    //     throw new Error(`No quiz with id: ${_id}`);
+    // }
 
     // if (!name || !description || !pointsPerQuestion || !tags) {
     //     res.status(constants.FORBIDDEN);
@@ -603,10 +603,10 @@ const updateQuiz = asyncHandler(async (req, res) => {
         throw new Error('Points per question must be greater than 0');
     }
 
-    if (!tags) {
-        res.status(constants.BAD_REQUEST);
-        throw new Error('Tags is required');
-    }
+    // if (!tags) {
+    //     res.status(constants.BAD_REQUEST);
+    //     throw new Error('Tags is required');
+    // }
 
     if (questionList.length === 0) {
         res.status(constants.BAD_REQUEST);

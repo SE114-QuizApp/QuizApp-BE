@@ -194,6 +194,13 @@ const registerUser = asyncHandler(async (req, res) => {
     const hashedPassword = await bcrypt.hash(password + '', 10);
 
     try {
+        avatar =
+            avatar ||
+            `https://avatar.iran.liara.run/username?username=${encodeURIComponent(
+                `${lastName} ${firstName}`
+            )}`;
+
+        userType = userType || 'Student';
         const user = await User.create({
             avatar,
             mail,
