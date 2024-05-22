@@ -680,7 +680,7 @@ const updateQuiz = asyncHandler(async (req, res) => {
     if (quiz.numberOfQuestions !== quiz.questionList.length)
         quiz.numberOfQuestions = quiz.questionList.length;
 
-    quiz.isDraft = quiz.questionList.length === 0 ? true : false;
+    // quiz.isDraft = quiz.questionList.length === 0 ? true : false;
 
     const updatedQuiz = await Quiz.findByIdAndUpdate(id, quiz, {
         new: true
