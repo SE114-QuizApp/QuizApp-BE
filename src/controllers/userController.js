@@ -175,9 +175,7 @@ const unFriend = asyncHandler(async (req, res) => {
     const myId = req.user._id;
 
     if (!mongoose.Types.ObjectId.isValid(myId) || !User.findById(myId)) {
-        res.status(constants.NOT_FOUND).json({
-            message: `No user with id: ${id}`
-        });
+        res.status(constants.NOT_FOUND);
         throw new Error(`No user with id: ${id}`);
     }
 
@@ -185,20 +183,13 @@ const unFriend = asyncHandler(async (req, res) => {
         !mongoose.Types.ObjectId.isValid(friendId) ||
         !User.findById(friendId)
     ) {
-        res.status(constants.NOT_FOUND).json({
-            message: `No user with id: ${id}`
-        });
+        res.status(constants.NOT_FOUND);
+        throw new Error(`No friend user with id: ${friendId}`);
     }
-    try {
-        const user = await User.findById(myId);
-        const friend = await User.findById(friendId);
-
-        user.follows = user.follows.filter((item) => item !== friend.userName);
-        await user.save();
-        res.status(constants.OK).json(user);
-    } catch (error) {
-        res.status(constants.SERVER_ERROR).json({ message: error.message });
-    }
+    const user = await User.findById(myId);
+    user.friends = user.friends.filter((item) => item.toString() !== friendId);
+    await user.save();
+    res.status(constants.OK).json(user);
 });
 
 const addFriend = asyncHandler(async (req, res) => {
@@ -216,20 +207,23 @@ const addFriend = asyncHandler(async (req, res) => {
         !mongoose.Types.ObjectId.isValid(friendId) ||
         !User.findById(friendId)
     ) {
-        res.status(constants.NOT_FOUND).json({
-            message: `No user with id: ${id}`
-        });
+        res.status(constants.NOT_FOUND);
+        throw new Error(`No friend user with id: ${friendId}`);
     }
-    try {
-        const user = await User.findById(myId);
-        const friend = await User.findById(friendId);
-        user.follows.push(friend.userName);
-        await user.save();
 
-        res.status(constants.OK).json(user);
-    } catch (error) {
-        res.status(constants.SERVER_ERROR).json({ message: error.message });
+    const user = await User.findById(myId);
+
+    const isExist = user.friends.find((item) => item.toString() === friendId);
+
+    if (isExist) {
+        res.status(constants.BAD_REQUEST);
+        throw new Error('Friend already exists');
     }
+
+    user.friends.push(friendId);
+    await user.save();
+
+    return res.status(constants.OK).json(user);
 });
 
 export {

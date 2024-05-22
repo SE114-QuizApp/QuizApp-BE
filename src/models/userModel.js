@@ -46,11 +46,21 @@ const userSchema = new mongoose.Schema({
     },
 
     follows: {
-        type: [String]
+        type: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            }
+        ]
     },
 
     friends: {
-        type: [String]
+        type: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            }
+        ]
     },
 
     emailToken: {
