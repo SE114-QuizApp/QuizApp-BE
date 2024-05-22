@@ -188,56 +188,51 @@ const loginSocial = asyncHandler(async (req, res) => {
 });
 
 const registerUser = asyncHandler(async (req, res) => {
-    const { avatar, firstName, lastName, userType, userName, mail, password } =
+    let { avatar, firstName, lastName, userType, userName, mail, password } =
         req.body;
 
     const hashedPassword = await bcrypt.hash(password + '', 10);
 
-    try {
-        avatar =
-            avatar ||
-            `https://avatar.iran.liara.run/username?username=${encodeURIComponent(
-                `${lastName} ${firstName}`
-            )}`;
+    avatar =
+        avatar ||
+        `https://avatar.iran.liara.run/username?username=${encodeURIComponent(
+            lastName + ' ' + firstName
+        )}`;
 
-        userType = userType || 'Student';
-        const user = await User.create({
-            avatar,
-            mail,
-            userName,
-            userType,
-            firstName,
-            lastName,
-            emailToken: crypto.randomBytes(64).toString('hex'),
-            isVerified: false,
-            password: hashedPassword,
-            point: 0,
-            follows: [],
-            friends: []
+    userType = userType || 'Student';
+    const user = await User.create({
+        avatar,
+        mail,
+        userName,
+        userType,
+        firstName,
+        lastName,
+        emailToken: crypto.randomBytes(64).toString('hex'),
+        isVerified: true,
+        password: hashedPassword,
+        point: 0,
+        follows: [],
+        friends: []
+    });
+    if (user) {
+        const { accessToken, refreshToken } = await authorizeInfoUser(user);
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: false,
+            path: '/',
+            sameSite: 'strict'
         });
-        if (user) {
-            const { accessToken, refreshToken } = await authorizeInfoUser(user);
 
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                secure: false,
-                path: '/',
-                sameSite: 'strict'
-            });
-
-            const { password, ...userWithoutPassword } = user._doc;
-            res.status(constants.OK).json({
-                user: userWithoutPassword,
-                accessToken,
-                refreshToken
-            });
-        } else {
-            res.status(constants.BAD_REQUEST);
-            throw new Error('User data is not valid');
-        }
-    } catch (error) {
-        res.status(constants.SERVER_ERROR);
-        throw new Error(error);
+        const { password, ...userWithoutPassword } = user._doc;
+        res.status(constants.OK).json({
+            user: userWithoutPassword,
+            accessToken,
+            refreshToken
+        });
+    } else {
+        res.status(constants.BAD_REQUEST);
+        throw new Error('User data is not valid');
     }
 });
 
