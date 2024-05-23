@@ -693,6 +693,7 @@ const updateQuiz = asyncHandler(async (req, res) => {
 //access Authenticated user
 const deleteQuiz = asyncHandler(async (req, res) => {
     const { id } = req.params;
+    const req_user = req.user._id;
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(constants.NOT_FOUND).json(`No quiz with id: ${id}`);
     }
@@ -701,18 +702,15 @@ const deleteQuiz = asyncHandler(async (req, res) => {
     if (!quiz) {
         return res.status(constants.NOT_FOUND).json(`No quiz with id: ${id}`);
     }
+    // console.log(req_user.toString(), quiz.creator._id.toString());
 
-    // if (!quiz.sourceCreator) {
-    //     const handleRemoveQuestion = async () => {
-    //         quiz.questionList.map((item) => {
-    //             const handleDelete = async () => {
-    //                 await Question.findByIdAndRemove(item._id);
-    //             };
-    //             handleDelete();
-    //         });
-    //     };
-    //     handleRemoveQuestion();
-    // }
+    if (req_user.toString() !== quiz.creator._id.toString()) {
+        return res
+            .status(constants.FORBIDDEN)
+            .json('You can only delete your quiz');
+    }
+
+    await Question.deleteMany({ _id: { $in: quiz.questionList } });
 
     await Quiz.findByIdAndRemove(id);
     res.status(constants.OK).json({
