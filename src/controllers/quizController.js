@@ -80,7 +80,7 @@ const getQuizzesDiscoverPage = asyncHandler(async (req, res) => {
             $sort: { quizzesCount: -1 } // Sắp xếp giảm dần theo số lượng bài kiểm tra
         },
         {
-            $limit: 3 // Giới hạn kết quả chỉ lấy 5 danh mục đầu tiên
+            $limit: 6 // Giới hạn kết quả chỉ lấy 5 danh mục đầu tiên
         },
         {
             $project: {
