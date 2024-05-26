@@ -34,7 +34,8 @@ const findQuizByCreator = async (creatorId) => {
                 ]
             })
             .populate({ path: 'grade', select: 'name' })
-            .populate({ path: 'category', select: 'name' });
+            .populate({ path: 'category', select: 'name' })
+            .sort({ updatedAt: -1 });
 
         // quizzes.map((quiz) => {
         //     quiz.questionList.map((question, index) => {

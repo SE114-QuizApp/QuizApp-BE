@@ -148,8 +148,8 @@ const getTeacherQuizzes = asyncHandler(async (req, res) => {
             message: 'Invalid id'
         });
     }
-
-    const user = await User.findById(teacherId).sort({ _id: -1 });
+    //find quizzes by creator and sort by date created
+    const user = await User.findById(teacherId);
     if (!user) {
         return res.status(constants.NOT_FOUND).json({
             message: 'User not found'
