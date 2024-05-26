@@ -149,7 +149,7 @@ const getTeacherQuizzes = asyncHandler(async (req, res) => {
         });
     }
 
-    const user = await User.findById(teacherId);
+    const user = await User.findById(teacherId).sort({ _id: -1 });
     if (!user) {
         return res.status(constants.NOT_FOUND).json({
             message: 'User not found'
